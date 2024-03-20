@@ -6,8 +6,10 @@ import Link from "@mui/material/Link";
 import NextLink from "next/link";
 import ProTip from "@/components/ProTip";
 import Copyright from "@/components/Copyright";
+import { getServerSession } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const { user } = await getServerSession();
   return (
     <Container maxWidth="lg">
       <Box
@@ -20,7 +22,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-          Material UI - Next.js App Router example in TypeScript
+          Hi! {user ? user.username : "Guest"}
         </Typography>
         <Link href="/about" color="secondary" component={NextLink}>
           Go to the about page

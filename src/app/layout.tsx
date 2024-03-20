@@ -18,6 +18,9 @@ import ListItemText from "@mui/material/ListItemText";
 import StarIcon from "@mui/icons-material/Star";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import FiberNewIcon from '@mui/icons-material/FiberNew';
 
 import theme from "@/theme";
 import Link from "next/link";
@@ -44,11 +47,11 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "メニュー",
+    title: "アカウント",
     items: [
-      { text: "About", icon: <StarIcon />, link: "/about" },
-      { text: "検索", icon: <SearchIcon />, link: "/about" },
-      { text: "設定", icon: <SettingsIcon />, link: "/about" },
+      { text: "Signup", icon: <FiberNewIcon />, link: "/signup" },
+      { text: "ログイン", icon: <LoginIcon />, link: "/login" },
+      { text: "ログアウト", icon: <LogoutIcon />, link: "/logout" },
     ],
   },
 ];
@@ -64,7 +67,7 @@ function NavGroups({ navGroups }: { navGroups: NavGroup[] }) {
           </Typography>
           {navGroup.items.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <Link href="/about" passHref legacyBehavior>
+              <Link href={item.link} passHref legacyBehavior>
                 <ListItemButton>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} />
