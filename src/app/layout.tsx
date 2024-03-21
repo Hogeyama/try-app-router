@@ -5,7 +5,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { ThemeProvider, styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
+import Drawer, { drawerClasses } from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
@@ -18,13 +18,13 @@ import ListItemText from "@mui/material/ListItemText";
 import StarIcon from "@mui/icons-material/Star";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import FiberNewIcon from '@mui/icons-material/FiberNew';
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+import FiberNewIcon from "@mui/icons-material/FiberNew";
 
 import theme from "@/theme";
 import Link from "next/link";
-import { Card, CardContent, Divider } from "@mui/material";
+import { Divider } from "@mui/material";
 
 type NavItem = {
   text: string;
@@ -82,15 +82,17 @@ function NavGroups({ navGroups }: { navGroups: NavGroup[] }) {
 }
 
 const drawerWidth = 240;
+const appBarHeight = 64;
 
 const AppBar_ = styled(AppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  height: appBarHeight,
 }));
 
 const Drawer_ = styled(Drawer)({
   width: drawerWidth,
   flexShrink: 0,
-  [`& .MuiDrawer-paper`]: {
+  [`& .${drawerClasses.paper}`]: {
     width: drawerWidth,
     boxSizing: "border-box",
   },
@@ -107,7 +109,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
               <AppBar_ position="fixed">
                 <Toolbar>
                   <Typography variant="h6" noWrap component="div">
-                    メガロパ音頭
+                    サンプル
                   </Typography>
                 </Toolbar>
               </AppBar_>
@@ -117,12 +119,14 @@ export default function RootLayout(props: { children: React.ReactNode }) {
               </Drawer_>
               <Box
                 component="main"
-                sx={{ flexGrow: 1, px: 1, minHeight: "100vh" }}
+                sx={{
+                  flexGrow: 1,
+                  height: "100%",
+                  maxWidth: `calc(100% - ${drawerWidth}px)`,
+                }}
               >
                 <Toolbar />
-                <Card sx={{ m: 2, my: 3 }}>
-                  <CardContent>{props.children}</CardContent>
-                </Card>
+                {props.children}
               </Box>
             </Box>
           </ThemeProvider>
