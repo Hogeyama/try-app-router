@@ -6,9 +6,20 @@ import { cookies } from "next/headers";
 import { lucia } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-type FormState = {
+export type FormState = {
   error?: string;
 };
+
+const keys = ["username", "password"] as const;
+export type Param = (typeof keys)[number];
+
+const params: Record<Param, string> = keys.reduce(
+  (obj, key: Param) => {
+    obj[key] = key;
+    return obj;
+  },
+  {} as Record<Param, string>,
+);
 
 export default async function login(
   prev: FormState,
@@ -23,7 +34,7 @@ export default async function login(
     JSON.stringify(Object.fromEntries(formData.entries())),
   );
 
-  const username = formData.get("username");
+  const username = formData.get(params.username);
   if (
     typeof username !== "string" ||
     username.length < 3 ||
@@ -34,7 +45,7 @@ export default async function login(
       error: "Invalid username",
     };
   }
-  const password = formData.get("password");
+  const password = formData.get(params.password);
   if (
     typeof password !== "string" ||
     password.length < 6 ||
