@@ -1,34 +1,47 @@
 "use client";
 
 import { useFormState } from "react-dom";
-import login, { type Param } from "./action";
 import { Box, Button, TextField } from "@mui/material";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+
+import login from "./action";
+import * as schema from "./schema";
 
 export default function Page() {
-  const [state, action] = useFormState(login, {});
-  // 簡潔に型安全に書く方法が分からない。
-  // next-safe-actionみたいなのに頼るべき？
-  const username = "username" satisfies Param;
-  const password = "password" satisfies Param;
+  const [lastResult, action] = useFormState(login, null);
+  const [form, fields] = useForm({
+    lastResult,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: schema.loginForm });
+    },
+    shouldValidate: "onBlur",
+  });
+
   return (
     <Box sx={{ m: 2 }}>
       <h1>Login</h1>
-      <form action={action}>
+      {/* onSubmitがあるとなぜかclient-side validationが効かなくなる */}
+      <form action={action} {...getFormProps(form)} onSubmit={undefined}>
         <Box sx={{ m: 1 }}>
           <TextField
-            id={username}
-            name={username}
             label="Username"
             variant="outlined"
+            {...getInputProps(fields.username, { type: "text" })}
+            // keyは個別に指定しないとNext.jsがWarningを出す
+            key={fields.username.key}
+            error={(lastResult?.error?.username?.length ?? 0) > 0}
+            helperText={lastResult?.error?.username?.join(",")}
           />
         </Box>
         <Box sx={{ m: 1 }}>
           <TextField
-            id={password}
-            name={password}
             label="Password"
             variant="outlined"
-            type="password"
+            {...getInputProps(fields.password, { type: "password" })}
+            key={fields.password.key}
+            error={(lastResult?.error?.password?.length ?? 0) > 0}
+            helperText={lastResult?.error?.password?.join(",")}
           />
         </Box>
         <Box sx={{ m: 1 }}>
@@ -36,7 +49,6 @@ export default function Page() {
             Continue
           </Button>
         </Box>
-        {state.error && <p>{state.error}</p>}
       </form>
     </Box>
   );

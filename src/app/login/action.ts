@@ -1,60 +1,27 @@
 "use server";
 
-import { prisma } from "@/lib/db";
+import "server-only";
 import { Argon2id } from "oslo/password";
 import { cookies } from "next/headers";
-import { lucia } from "@/lib/auth";
 import { redirect } from "next/navigation";
-
-export type FormState = {
-  error?: string;
-};
-
-const keys = ["username", "password"] as const;
-export type Param = (typeof keys)[number];
-
-const params: Record<Param, string> = keys.reduce(
-  (obj, key: Param) => {
-    obj[key] = key;
-    return obj;
-  },
-  {} as Record<Param, string>,
-);
+import { parseWithZod } from "@conform-to/zod";
+import { SubmissionResult } from "@conform-to/react";
+import { prisma } from "@/lib/db";
+import { lucia } from "@/lib/auth";
+import * as schema from "./schema";
 
 export default async function login(
-  prev: FormState,
+  _: SubmissionResult | null,
   formData: FormData,
-): Promise<FormState> {
-  "use server";
-  if (!formData) {
-    return prev;
+): Promise<SubmissionResult | null> {
+  const submission = parseWithZod(formData, {
+    schema: schema.loginForm,
+  });
+  if (submission.status !== "success") {
+    return submission.reply();
   }
-  console.log(
-    "formData",
-    JSON.stringify(Object.fromEntries(formData.entries())),
-  );
 
-  const username = formData.get(params.username);
-  if (
-    typeof username !== "string" ||
-    username.length < 3 ||
-    username.length > 31 ||
-    !/^[a-z0-9_-]+$/.test(username)
-  ) {
-    return {
-      error: "Invalid username",
-    };
-  }
-  const password = formData.get(params.password);
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
-    };
-  }
+  const { username, password } = submission.value;
 
   const existingUser = await prisma.user.findUnique({
     where: {
@@ -72,7 +39,10 @@ export default async function login(
     // it is crucial your implementation is protected against brute-force attacks with login throttling etc.
     // If usernames are public, you may outright tell the user that the username is invalid.
     return {
-      error: "Incorrect username or password",
+      status: "error",
+      error: {
+        username: ["Incorrect username or password"],
+      },
     };
   }
 
@@ -82,7 +52,10 @@ export default async function login(
   );
   if (!validPassword) {
     return {
-      error: "Incorrect username or password",
+      status: "error",
+      error: {
+        username: ["Incorrect username or password"],
+      },
     };
   }
 

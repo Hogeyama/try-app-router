@@ -1,41 +1,28 @@
 "use server";
 
-import { Prisma, prisma } from "@/lib/db";
+import "server-only";
 import { Argon2id } from "oslo/password";
 import { cookies } from "next/headers";
-import { lucia } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { generateId } from "lucia";
+import { parseWithZod } from "@conform-to/zod";
+import { SubmissionResult } from "@conform-to/react";
+import { Prisma, prisma } from "@/lib/db";
+import { lucia } from "@/lib/auth";
+import * as schema from "./schema";
 
-type FormState = {
-  error?: string;
-};
-
-export async function signup(
-  _formState: FormState,
+export default async function signup(
+  _: SubmissionResult | null,
   formData: FormData,
-): Promise<FormState> {
-  const username = formData.get("username");
-  if (
-    typeof username !== "string" ||
-    username.length < 3 ||
-    username.length > 31 ||
-    !/^[a-z0-9_-]+$/.test(username)
-  ) {
-    return {
-      error: "Invalid username",
-    };
+): Promise<SubmissionResult | null> {
+  const submission = parseWithZod(formData, {
+    schema: schema.signupForm,
+  });
+  if (submission.status !== "success") {
+    return submission.reply();
   }
-  const password = formData.get("password");
-  if (
-    typeof password !== "string" ||
-    password.length < 6 ||
-    password.length > 255
-  ) {
-    return {
-      error: "Invalid password",
-    };
-  }
+
+  const { username, password } = submission.value;
 
   const hashedPassword = await new Argon2id().hash(password);
   const userId = generateId(15);
@@ -52,7 +39,10 @@ export async function signup(
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
       if (err.code === "P2002") {
         return {
-          error: "Username already exists",
+          status: "error",
+          error: {
+            username: ["Username already exists"],
+          },
         };
       }
     }
