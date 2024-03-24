@@ -1,13 +1,13 @@
 "use server";
 
-import "server-only";
-import { Argon2id } from "oslo/password";
+import { lucia } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import type { SubmissionResult } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { parseWithZod } from "@conform-to/zod";
-import { SubmissionResult } from "@conform-to/react";
-import { prisma } from "@/lib/db";
-import { lucia } from "@/lib/auth";
+import { Argon2id } from "oslo/password";
+import "server-only";
 import * as schema from "./schema";
 
 export default async function login(

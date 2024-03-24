@@ -1,8 +1,8 @@
-import * as React from "react";
+import { getServerSession } from "@/lib/auth";
+import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { getServerSession } from "@/lib/auth";
+import * as React from "react";
 import CustomizedTables from "./_components/Table";
 
 export default async function Home() {

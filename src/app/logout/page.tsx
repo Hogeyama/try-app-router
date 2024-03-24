@@ -1,6 +1,6 @@
-import { lucia, getServerSession } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { getServerSession, lucia } from "@/lib/auth";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   return (
