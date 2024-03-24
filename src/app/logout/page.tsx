@@ -1,31 +1,21 @@
-import { getServerSession, lucia } from "@/lib/auth";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+import { Box, Button } from "@mui/material";
+import { useFormState } from "react-dom";
+import logout from "./action";
 
-export default async function Page() {
+export default function Page() {
+  const [error, action] = useFormState(logout, null);
   return (
-    <form action={logout}>
-      <button>Log out</button>
-    </form>
+    <Box sx={{ m: 2 }}>
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <form action={action}>
+          <Button type="submit" variant="outlined">
+            Log out
+          </Button>
+        </form>
+      )}
+    </Box>
   );
-}
-
-async function logout() {
-  "use server";
-  const { session } = await getServerSession();
-  if (!session) {
-    return {
-      error: "Unauthorized",
-    };
-  }
-
-  await lucia.invalidateSession(session.id);
-
-  const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(
-    sessionCookie.name,
-    sessionCookie.value,
-    sessionCookie.attributes,
-  );
-  return redirect("/login");
 }
