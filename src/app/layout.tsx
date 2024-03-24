@@ -33,13 +33,13 @@ type NavItem = {
 };
 
 type NavGroup = {
-  title: string;
+  id: string;
   items: NavItem[];
 };
 
 const navGroups: NavGroup[] = [
   {
-    title: "メニュー",
+    id: "メニュー",
     items: [
       { text: "About", icon: <StarIcon />, link: "/about" },
       { text: "検索", icon: <SearchIcon />, link: "/about" },
@@ -47,11 +47,11 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: "アカウント",
+    id: "アカウント",
     items: [
-      { text: "Signup", icon: <FiberNewIcon />, link: "/signup" },
       { text: "ログイン", icon: <LoginIcon />, link: "/login" },
       { text: "ログアウト", icon: <LogoutIcon />, link: "/logout" },
+      { text: "サインアップ", icon: <FiberNewIcon />, link: "/signup" },
     ],
   },
 ];
@@ -60,11 +60,8 @@ function NavGroups({ navGroups }: { navGroups: NavGroup[] }) {
   return (
     <Box sx={{ overflow: "auto" }}>
       {navGroups.map((navGroup, i) => (
-        <List key={navGroup.title}>
-          {i > 0 && <Divider />}
-          <Typography variant="h6" sx={{ pt: 1, pl: 2 }}>
-            {navGroup.title}
-          </Typography>
+        <List key={navGroup.id}>
+          {i > 0 && <Divider sx={{ mb: 2 }} />}
           {navGroup.items.map((item) => (
             <ListItem key={item.text} disablePadding>
               <Link href={item.link} passHref legacyBehavior>
