@@ -29,6 +29,7 @@
               pkgs.yarn
               pkgs.nodejs
               pkgs.nodePackages.prisma
+              pkgs.playwright-driver.browsers
             ];
             commands = [
               {
@@ -53,6 +54,18 @@
               {
                 name = "PRISMA_FMT_BINARY";
                 value = "${pkgs.prisma-engines}/bin/prisma-fmt";
+              }
+              {
+                name = "PLAYWRIGHT_BROWSERS_PATH";
+                value = "${pkgs.playwright-driver.browsers}";
+              }
+              {
+                name = "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS";
+                value = "true";
+              }
+              {
+                name = "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD";
+                value = "true";
               }
             ];
           };

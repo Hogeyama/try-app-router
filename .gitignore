@@ -37,3 +37,7 @@ next-env.d.ts
 
 # local data
 .data/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
