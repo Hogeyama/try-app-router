@@ -10,4 +10,4 @@ export const password = z
   .string()
   .min(6)
   .max(255)
-  .regex(/^[\x00-\x7F]*$/);
+  .regex(/^[ -~]+$/); // printable ASCII
