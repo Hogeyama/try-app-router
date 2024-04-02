@@ -28,6 +28,7 @@
             packages = [
               pkgs.yarn
               pkgs.nodejs
+              pkgs.biome
               pkgs.nodePackages.prisma
               pkgs.playwright-driver.browsers
             ];
